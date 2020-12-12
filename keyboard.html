@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>键盘</title>
+    <style>
+        * {
+            padding: 0rem;
+            margin: 0rem;
+        }
+
+        .box-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            align-content: flex-start;
+        }
+
+        .box-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            align-content: flex-start;
+        }
+
+
+        .box-center {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+        }
+
+        .box-between {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            align-content: center;
+        }
+
+        html,
+        body {
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        body {
+            height: 100vh;
+            width: 100%;
+        }
+
+        #main {
+            min-height: 100%;
+            min-width: 100%;
+            height: 100%;
+            width: 100%;
+            background-color: rgb(0, 0, 0, 0.1);
+        }
+
+        #main>div {
+            min-height: 100%;
+            min-width: 100%;
+            height: 100%;
+            width: 100%;
+        }
+
+        #input {
+            height: 30%;
+            width: 100%;
+            font-size: 0.9rem;
+            flex-wrap: nowrap;
+            overflow-y: hidden;
+            overflow-x: auto;
+            white-space: nowrap;
+            box-sizing: border-box;
+            padding: 0rem 0.1rem;
+        }
+
+
+        #input>span {
+            box-sizing: border-box;
+            margin-left: 0.2rem;
+            padding: 0.3rem 0.1rem;
+            color: #000;
+            height: 80%;
+            width: 20%;
+            background-color: #FFE700;
+        }
+
+        #nine {
+            width: 75%;
+            height: 100%;
+        }
+
+        #twenty-six {
+
+            width: 100%;
+            height: 100%;
+        }
+
+        #nine>.box-between,
+        #twenty-six>.box-center {
+            width: 100%;
+            height: 33%;
+            box-sizing: border-box;
+        }
+
+
+        .word {
+            color: #FFF;
+            font-weight: 500;
+        }
+
+        #val {
+            font-size: 0.9rem;
+            color: #ffffff;
+            height: 22%;
+            width: 100%;
+            flex-wrap: wrap;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        #val>span {
+            margin-left: 0.4rem;
+            margin-top: 0.1rem;
+        }
+
+        #key {
+            box-sizing: border-box;
+            width: 100%;
+            height: 98%;
+            position: relative;
+            top: 0rem;
+            left: 0rem;
+        }
+
+        #key-panel {
+            min-width: 22%;
+            color: #fff;
+            height: 100%;
+        }
+
+        #key-panel>div {
+            height: 33%;
+            width: 100%;
+        }
+
+        .panel-option,
+        .key-word {
+            letter-spacing: 0.2rem;
+            font-size: 0.9rem;
+            border: 1px solid #FFFFFF;
+            margin-left: 0.2rem;
+            margin-top: 0.2rem;
+            border-radius: 0.2rem;
+            width: 33%;
+            height: 90%;
+            box-sizing: border-box;
+        }
+
+        .panel-option {
+            border: 1px solid #FFFFFF;
+            border-radius: 0.2rem;
+            box-sizing: border-box;
+            margin-top: 0.2rem;
+            margin-left: 0.2rem;
+        }
+
+        #inputDom {
+            color: #353535;
+            box-sizing: border-box;
+            padding: 0.3rem 0.1rem;
+            height: 80%;
+            width: 80%;
+            background-color: #fff;
+        }
+
+        .keyTrans-enter-active {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .keyTrans-leave-active {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .keyTrans-enter,
+        .keyTrans-leave-to {
+            opacity: 0;
+            transform: translateX(200px);
+        }
+
+        #key-main {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main" class="box-center">
+        <div class="box-column">
+            <div id="input" class="box-between">
+                <div class="box-row" id="inputDom">{{inputStatus}}{{Val}}{{inputVal}}</div>
+                <span @click="sendMsg" class="box-center">发送</span>
+            </div>
+            <div id="val" class="box-row">
+                <span class="box-center" v-for="(item,index) in mayList" v-if="getLimit(index)"
+                    @click="addWord(item)">{{item.word}}</span>
+                <span class="box-center" v-for="(item,index) in minorList" v-if="getLimit(index)"
+                    @click="addWord(item)">{{item.word}}</span>
+            </div>
+            <div class="box-center" id="key-main">
+                <transition name="keyTrans">
+                    <div class="box-row" id="key" v-if="keyState==1">
+                        <div id="nine" class="box-column">
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="keyState=3">
+                                    <span class="word">@/.</span>
+                                </div>
+                                <div class="box-center key-word" @click="groupList.push(['a','b','c'])">
+                                    <span class="word">ABC</span>
+                                </div>
+                                <div class="box-center key-word" @click="groupList.push(['d','e','f'])">
+                                    <span class="word">DEF</span>
+                                </div>
+                            </div>
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="groupList.push(['g','h','i'])">
+                                    <span class="word">GHI</span>
+                                </div>
+                                <div class="box-center key-word" @click="groupList.push(['j','k','l'])">
+                                    <span class="word">JKL</span>
+                                </div>
+                                <div class="box-center key-word" @click="groupList.push(['m','n','o'])">
+                                    <span class="word">MNO</span>
+                                </div>
+                            </div>
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="groupList.push(['p','q','r','s'])">
+                                    <span class="word">PQRS</span>
+                                </div>
+                                <div class="box-center key-word" @click="groupList.push(['t','u','v'])">
+                                    <span class="word">TUV</span>
+                                </div>
+                                <div class="box-center key-word" @click="groupList.push(['w','x','y','z'])">
+                                    <span class="word">WXYZ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="key-panel" class="box-column">
+                            <div class="box-center panel-option">
+                                <span @click="clearWord">清除</span>
+                            </div>
+                            <div class="box-center panel-option" @click="keyState=2">
+                                <span>123</span>
+                            </div>
+                            <div class="box-center panel-option" @click="keyState=0">
+                                <span>英文</span>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+
+                <transition name="keyTrans">
+                    <div class="box-row" id="key" v-if="keyState==2">
+                        <div id="nine" class="box-column">
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="Val+=1">
+                                    <span class="word">1</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=2">
+                                    <span class="word">2</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=3">
+                                    <span class="word">3</span>
+                                </div>
+                            </div>
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="Val+=4">
+                                    <span class="word">4</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=5">
+                                    <span class="word">5</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=6">
+                                    <span class="word">6</span>
+                                </div>
+                            </div>
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="Val+=7">
+                                    <span class="word">7</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=8">
+                                    <span class="word">8</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=9">
+                                    <span class="word">9</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="key-panel" class="box-column">
+                            <div class="box-center panel-option">
+                                <span @click="keyState=1">返回</span>
+                            </div>
+                            <div class="box-center panel-option" @click="Val+=0">
+                                <span>0</span>
+                            </div>
+                            <div class="box-center panel-option" @click="keyState=1">
+                                <span>拼音</span>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+                <transition name="keyTrans">
+                    <div class="box-row" id="key" v-if="keyState==3">
+                        <div id="nine" class="box-column">
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="Val+=','">
+                                    <span class="word">,</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+='。'">
+                                    <span class="word">。</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+='!'">
+                                    <span class="word">!</span>
+                                </div>
+                            </div>
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="Val+='、'">
+                                    <span class="word">、</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+=':'">
+                                    <span class="word">:</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+='?'">
+                                    <span class="word">?</span>
+                                </div>
+                            </div>
+                            <div class="box-between">
+                                <div class="box-center key-word" @click="Val+=';'">
+                                    <span class="word">;</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+='#'">
+                                    <span class="word">#</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+='&'">
+                                    <span class="word">&</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="key-panel" class="box-column">
+                            <div class="box-center panel-option">
+                                <span @click="keyState=1">返回</span>
+                            </div>
+                            <div class="box-center panel-option" @click="Val+=' '">
+                                <span>空格</span>
+                            </div>
+                            <div class="box-center panel-option" @click="keyState=1">
+                                <span>拼音</span>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+                <transition name="keyTrans">
+
+                    <div class="box-column" id="key" v-if="!keyState">
+                        <div id="twenty-six" class="box-column">
+                            <div class="box-center">
+                                <div class="box-center key-word" @click="TSInput('q')">
+                                    <span class="word">{{getCapital('Q')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('w')">
+                                    <span class="word">{{getCapital('W')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('e')">
+                                    <span class="word">{{getCapital('E')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('r')">
+                                    <span class="word">{{getCapital('R')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('t')">
+                                    <span class="word">{{getCapital('T')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('y')">
+                                    <span class="word">{{getCapital('Y')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('u')">
+                                    <span class="word">{{getCapital('U')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('i')">
+                                    <span class="word">{{getCapital('I')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('o')">
+                                    <span class="word">{{getCapital('O')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('p')">
+                                    <span class="word">{{getCapital('P')}}</span>
+                                </div>
+                            </div>
+                            <div class="box-center">
+                                <div class="box-center key-word" @click="TSInput('a')">
+                                    <span class="word">{{getCapital('A')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('s')">
+                                    <span class="word">{{getCapital('S')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('d')">
+                                    <span class="word">{{getCapital('D')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('f')">
+                                    <span class="word">{{getCapital('F')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('g')">
+                                    <span class="word">{{getCapital('G')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('h')">
+                                    <span class="word">{{getCapital('H')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('j')">
+                                    <span class="word">{{getCapital('J')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('k')">
+                                    <span class="word">{{getCapital('K')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="Val+='l'">
+                                    <span class="word">{{getCapital('L')}}</span>
+                                </div>
+                            </div>
+                            <div class="box-center">
+                                <div class="box-center key-word" style="width: 60%;" @click="capital=!capital">
+                                    <span class="word">{{capital?'小写':'大写'}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('z')">
+                                    <span class="word">{{getCapital('Z')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('x')">
+                                    <span class="word">{{getCapital('X')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('c')">
+                                    <span class="word">{{getCapital('C')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('v')">
+                                    <span class="word">{{getCapital('V')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('b')">
+                                    <span class="word">{{getCapital('B')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('n')">
+                                    <span class="word">{{getCapital('N')}}</span>
+                                </div>
+                                <div class="box-center key-word" @click="TSInput('m')">
+                                    <span class="word">{{getCapital('M')}}</span>
+                                </div>
+                                <div class="box-center key-word" style="width: 60%;" @click="keyState=1">
+                                    <span class="word">拼音</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./vue.min.js"></script>
+<script src="./pinyin.js"></script>
+<script>
+    init();
+
+
+    function init() {
+        var reg = new RegExp(/[a-zA-Z]*/);
+        return new Vue({
+            el: "#main",
+            data: {
+                keyState: 1,
+                Val: '',
+                inputVal: '',
+                groupList: [],
+                mayList: [],
+                minorList: [],
+                limit: 200,
+                may: {
+                    list: [''],
+                    index: '',
+                    children: false
+                },
+                capital: true
+            },
+            watch: {
+                groupList(val, oldVal) {
+                    this.matchPY(val);
+                    return;
+
+                },
+                keyState(val) {
+                    setTimeout(() => {
+
+                        if (!val) {
+                            api.openFrame({
+                                name: 'keyboard',
+                                url: 'widget://html/public/keyboard.html',
+                                slidBackEnabled: false,
+                                rect: {
+                                    x: api.winWidth * 0.64,
+                                    y: api.winHeight * 0.5,
+                                    w: api.winWidth * 0.35 + "px",
+                                    h: api.winHeight * 0.42 + "px"
+                                },
+                            });
+                            return;
+                        }
+
+                        api.openFrame({
+                            name: 'keyboard',
+                            url: 'widget://html/public/keyboard.html',
+                            slidBackEnabled: false,
+                            rect: {
+                                x: api.winWidth * 0.71,
+                                y: api.winHeight * 0.5,
+                                w: api.winWidth * 0.28 + "px",
+                                h: api.winHeight * 0.42 + "px"
+                            },
+                        });
+                    }, 500);
+                }
+            },
+            computed: {
+                inputStatus() {
+                    return this.inputVal || this.Val ? '' : '|';
+                }
+            },
+            mounted() {
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        var w = document.body.offsetHeight;
+                        document.querySelector('html').style.fontSize = w / 10 + "px";
+                    }, 300);
+                })
+                var deal = this.deal();
+            },
+            methods: {
+                TSInput(str) {
+                    if (this.capital) {
+                        this.Val += str.toUpperCase();
+                        return;
+                    }
+                    this.Val += str.toLowerCase();
+
+                },
+                getCapital(str) {
+
+                    if (this.capital) {
+                        return str.toUpperCase();
+                    }
+                    return str.toLowerCase();
+                },
+                clearWord() {
+                    if (this.inputVal == '') {
+                        this.Val = this.Val.slice(0, this.Val.length - 1)
+                    } else {
+                        this.groupList = this.groupList.slice(0, this.groupList.length - 1) || [];
+                        this.inputVal = this.inputVal.slice(0, this.inputVal - 1);
+                    }
+                },
+                sendMsg() {
+                    this.groupList = [];
+                    if (!this.Val) {
+                        return;
+                    }
+                    //发送消息
+                    api.sendEvent({
+                        name: 'postMsg1',
+                        extra: {
+                            name: "我",
+                            msg: this.Val
+                        }
+                    });
+                    this.Val = '';
+                },
+                getLimit(index) {
+                    return index < this.limit;
+                },
+                deal() {
+                    return {
+                        8: function () {
+                            this.inputVal = this.inputVal.substr(0, this.inputVal.length - 1);
+                        }.bind(this)
+                    }
+                },
+                addWord(item) {
+                    this.groupList = this.groupList.slice(item.index.length, this.inputVal.length);
+                    this.inputVal = this.inputVal.slice(item.index.length, this.inputVal.length);
+                    this.Val += item.word;
+                    val.scrollTop = "0px";
+                },
+                matchPY(matchString) {
+                    var list = {};
+                    this.mayList = [];
+                    this.minorList = [];
+
+                    function getGroup(strArray, arry = '') {
+                        var group = [];
+                        var ret;
+                        var tem;
+                        ret = matchWord(arry);
+                        if (ret.children) {
+                            if (strArray.length > 1) {
+                                var te = strArray.slice(1, strArray.length);
+                                strArray[0].map((obj) => {
+                                    group.unshift(...getGroup(te, arry + obj));
+                                });
+                            } else {
+                                strArray[0].map((obj) => {
+                                    group.unshift(arry + obj);
+                                });
+                            }
+                        }
+                        return group;
+                    }
+
+                    function getFirst(arry) {
+                        var temp = '';
+                        arry.map((obj) => {
+                            temp += obj[0]
+                        });
+                        return temp;
+                    }
+
+                    function getAllWord(ss, index) {
+                        var t = [];
+                        if (ss.list && !list[index]) {
+                            t.push(...ss.list);
+                        }
+                        for (var key in ss.children) {
+                            if (ss.children.hasOwnProperty(key)) {
+                                t.push(...getAllWord(ss.children[key], index + key));
+                            }
+                        }
+                        return t;
+                    }
+
+                    function matchWord(str) {
+                        str = str.split('')
+                        var s = PYList;
+                        var listW = [];
+                        var index = '';
+                        var tempI = '';
+                        var children = true;
+                        str.some((obj) => {
+                            if (s[obj]) {
+                                children = s[obj].children ? true : false;
+                                tempI += obj;
+                                if (s[obj].list && !list[tempI]) {
+                                    index = tempI;
+                                    listW = s[obj].list;
+                                }
+                                if (s[obj].children) {
+                                    s = s[obj].children;
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            } else {
+                                children = false;
+                                return true;
+                            }
+                        });
+                        list[index] = true;
+                        return {
+                            list: listW,
+                            index,
+                            children
+                        };
+                    }
+
+
+                    var main = function (matchStr) {
+
+                        var matchRe1 = matchWord(matchStr);
+                        if (!matchRe1.list.length) {
+                            return matchRe1;
+                        }
+                        var temp = [];
+                        matchRe1.list.map((obj) => {
+                            temp.push({
+                                word: obj,
+                                index: matchRe1.index
+                            })
+                        });
+                        if (matchRe1.list[0].length >= this.may.list[0].length) {
+                            if (matchRe1.index.length >= this.may.index.length) {
+                                this.may = matchRe1;
+                                this.mayList.unshift(...temp);
+                            } else {
+                                this.mayList.push(...temp);
+                            }
+                        } else {
+                            this.minorList.push(...temp);
+                        }
+                        return matchRe1;
+                    }.bind(this);
+
+
+                    this.inputVal = this.inputVal.replace(/[a-zA-Z]*/, '');
+                    var group;
+                    var ret;
+                    var tempList;
+                    this.may = {
+                        list: [''],
+                        index: '',
+                        children: false
+                    };
+                    for (var gi = matchString.length; gi > 0; gi--) {
+                        tempList = {};
+                        Object.assign(tempList, list);
+                        group = getGroup(matchString.slice(0, gi));
+                        list = tempList;
+                        for (var glen = 0; glen < group.length; glen++) {
+                            ret = main(group[glen]);
+                        }
+                    }
+                    this.inputVal += this.may.index + getFirst(matchString.slice(this.may.index.length,
+                        matchString
+                        .length));
+                }
+            }
+        });
+    }
+</script>
+
+</html>
